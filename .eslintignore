@@ -1,0 +1,7 @@
+*.config.js
+.eslintrc.js
+node_modules
+public
+.husky
+dist
+*.d.ts
