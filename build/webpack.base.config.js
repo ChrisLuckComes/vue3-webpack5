@@ -24,11 +24,11 @@ const prodMode = env['NODE_ENV'] == 'production' //生产环境
 
 module.exports = {
   entry: {
-    path: path.resolve(__dirname, './src/main.ts'),
+    path: path.resolve(__dirname, '../src/main.ts'),
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, '../src'),
     },
   },
   module: {
@@ -39,7 +39,7 @@ module.exports = {
       },
       {
         test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
+        exclude: (file) => /node_modules/.test(file) && !/\.vue\.js/.test(file),
         use: {
           loader: 'babel-loader',
         },
@@ -47,22 +47,18 @@ module.exports = {
       {
         test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-        },
+        use: ['babel-loader'],
       },
       {
         test: /\.(css|scss)$/,
         use: [
-          !prodMode
-            ? 'style-loader'
-            : {
-                loader: miniCssExtractPlugin.loader,
-                options: {
-                  publicPath: '../',
-                },
-              },
-          'css-loader',
+          !prodMode ? 'vue-style-loader' : miniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              esModule: false,
+            },
+          },
           'postcss-loader',
           'sass-loader',
         ],
@@ -102,13 +98,6 @@ module.exports = {
       },
     ],
   },
-  devServer: {
-    hot: true,
-    open: true,
-    port: 8080,
-    host: 'localhost',
-    overlay: true,
-  },
   cache: {
     type: 'filesystem',
     buildDependencies: {
@@ -116,14 +105,14 @@ module.exports = {
     },
   },
   output: {
-    filename: '.js/[name].[chunkhash].js',
-    path: path.resolve(__dirname, './dist'),
+    filename: 'js/[name].[chunkhash].js',
+    path: path.resolve(__dirname, '../dist'),
     clean: true,
   },
   plugins: [
     new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, './public/index.html'),
+      template: path.resolve(__dirname, '../public/index.html'),
       filename: 'index.html',
       title: 'webpack5+vue3',
       minify: {
@@ -145,7 +134,7 @@ module.exports = {
     new copyWebpackPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, './public'),
+          from: path.resolve(__dirname, '../public'),
           to: './',
           globOptions: {
             dot: true,
@@ -160,8 +149,16 @@ module.exports = {
       chunkFilename: './css/[id].[contenthash].css',
     }),
     new ESlintPlugin({
-      context: path.resolve(__dirname, 'src'),
-      extensions: ['js', 'ts', 'vue'],
+      context: path.join(__dirname, '../src'),
+      extensions: ['js', 'jsx', 'ts', 'tsx', 'vue'],
+      emitError: true,
+      emitWarning: true,
+      failOnWarning: false,
+      failOnError: true,
+      overrideConfigFile: './.eslintrc.js',
+      // Toggle autofix
+      fix: false,
+      cache: false,
     }),
   ],
 }

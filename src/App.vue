@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import HelloWorld from '@/components/HelloWorld.vue'
+
+const onChangeCount = (value: number) => {
+  console.log('count: ', value)
+}
 </script>
 
 <template>
@@ -8,9 +12,19 @@ import HelloWorld from './components/HelloWorld.vue'
       <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
     </a>
   </div>
-  <HelloWorld msg="一个完整的Webpack5 + Vue的工程脚手架" />
+  <HelloWorld
+    @change-count="onChangeCount"
+    msg="Vue3 + TypeScript + Webpack5的工程脚手架"
+  >
+    <template v-slot:detail>
+      <div>
+        该脚手架已配置好babel,eslint,stylelint,sass,postcss 支持script
+        setup语法，开箱即用
+      </div>
+    </template>
+  </HelloWorld>
 </template>
 
-<style scoped lang="scss">
-@import "./app.scss";
+<style lang="scss">
+@import './app';
 </style>
